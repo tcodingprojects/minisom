@@ -156,7 +156,7 @@ class MiniSom(object):
         while not it.finished:
             # eta * neighborhood_function * (x-w)
             x_w = (x - self._weights[it.multi_index])
-            self._weights[it.multi_index] += g[it.multi_index] * x_w
+            self._weights[it.multi_index] = self._weights[it.multi_index] + g[it.multi_index] * x_w
             # normalization
             norm = fast_norm(self._weights[it.multi_index])
             self._weights[it.multi_index] = self._weights[it.multi_index]/norm
@@ -196,7 +196,7 @@ class MiniSom(object):
         while iteration < num_iteration:
             idx = iteration % (len(data)-1)
             self.update(data[idx], self.winner(data[idx]), iteration)
-            iteration += 1
+            iteration = iteration + 1
 
     def _init_T(self, num_iteration):
         """Initializes the parameter T needed to adjust the learning rate"""
@@ -217,7 +217,7 @@ class MiniSom(object):
                             jj >= 0 and jj < self._weights.shape[1]):
                         w_1 = self._weights[ii, jj, :]
                         w_2 = self._weights[it.multi_index]
-                        um[it.multi_index] += fast_norm(w_1-w_2)
+                        um[it.multi_index] = um[it.multi_index] + fast_norm(w_1-w_2)
             it.iternext()
         um = um/um.max()
         return um
@@ -229,7 +229,7 @@ class MiniSom(object):
         """
         a = zeros((self._weights.shape[0], self._weights.shape[1]))
         for x in data:
-            a[self.winner(x)] += 1
+            a[self.winner(x)] = a[self.winner(x)] + 1
         return a
 
     def quantization_error(self, data):
@@ -237,7 +237,7 @@ class MiniSom(object):
         distance between each input sample and its best matching unit."""
         error = 0
         for x in data:
-            error += fast_norm(x-self._weights[self.winner(x)])
+            error = error + fast_norm(x-self._weights[self.winner(x)])
         return error/len(data)
 
     def win_map(self, data):
